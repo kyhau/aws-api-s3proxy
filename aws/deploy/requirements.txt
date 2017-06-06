@@ -1,0 +1,8 @@
+# This file is used for running deployment scripts and pytest
+boto3>=1.4.4
+pip>=9.0.1
+virtualenv>=15.1.0
+pytest>=3.0.7
+
+# Enable the following for generating API.md
+swagger2markdown>=0.1.9
