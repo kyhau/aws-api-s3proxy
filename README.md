@@ -82,4 +82,5 @@ swagger2markdown -i api\DataServiceAPI_swagger.json -o API.md
 1. [Integrating API with AWS services S3](http://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-s3.html)
 1. [S3 Bucket Restriction](http://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html)
 1. [S3 Transfer Acceleration](http://docs.aws.amazon.com/AmazonS3/latest/dev/transfer-acceleration.html)
+1. [Use Postman to call API](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-use-postman-to-call-api.html)
 
