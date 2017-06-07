@@ -5,8 +5,8 @@ import boto3
 import configparser
 import json
 import os
-import py.test
 from os.path import dirname, exists, join, realpath
+import py.test
 from shutil import rmtree
 from tempfile import mkdtemp
 
@@ -17,10 +17,15 @@ from tempfile import mkdtemp
 ENV_AWS_ACCESS_KEY_ID = 'aws_access_key_id'
 ENV_AWS_SECRET_ACCESS_KEY = 'aws_secret_access_key'
 
+# Environment variable for specifying the specific stage of the API to be tested
+ENV_STAGE = 'api_stage'
+
+
 SETTINGS = {
     'api_json_file': join(dirname(dirname(dirname(dirname(realpath(__file__))))), 'api', 'DataServiceAPI_swagger.json'),
     'aws_region': 'ap-southeast-2',
     'ini_file': join(dirname(dirname(realpath(__file__))), 'aws.ini'),
+    'api_stage': 'stage'
 }
 
 ###############################################################################
@@ -35,15 +40,63 @@ def config():
 
 @py.test.fixture(scope='module')
 def aws_settings(config):
-    """Retrieve AWS resource settings from the ini file.
+    """Retrieve AWS resource settings from the ini file and environment variables.
     """
     settings = SETTINGS
     settings['aws_restapiid'] = config['default']['aws.apigateway.restApiId']
+    settings['aws_s3'] = config['test']['aws.s3']
+
     settings['aws_access_key_id'] = os.environ[ENV_AWS_ACCESS_KEY_ID]
     settings['aws_secret_access_key'] = os.environ[ENV_AWS_SECRET_ACCESS_KEY]
-    settings['aws_s3'] = config['test']['aws.s3']
+    if ENV_STAGE in os.environ:
+        settings['api_stage'] = os.environ[ENV_STAGE]
+
     return settings
 
+
+def create_test_cases(bucket, sample_test_file, test_name):
+
+    with open(sample_test_file, 'r') as fp:
+        new_data = fp.read()
+
+    basepath = '?key={}'.format(bucket)
+    testpath = '{}/{}'.format(basepath, test_name)
+    test_file_1 = '{}/{}'.format(testpath,'pytest_1.json')
+    test_file_2 = '{}/a/b/{}'.format(testpath, 'pytest_2.json')
+
+    test_cases = [
+        # HEAD - Pass:valid bucket
+        {'method': 'HEAD', 'querystr': basepath, 'body': '', 'pass': True},
+
+        # HEAD - Fail:invalid bucket
+        {'method': 'HEAD', 'querystr': '', 'body': '', 'pass': False},
+        {'method': 'HEAD', 'querystr': '?key=nonexistbucket', 'body': '', 'pass': False},
+
+        # PUT - Pass:add new bucket/file
+        {'method': 'PUT', 'querystr': test_file_1, 'body': new_data, 'pass': True},
+        # GET - Pass:confirm file added
+        {'method': 'GET', 'querystr': test_file_1, 'body': '', 'pass': True},
+
+        # PUT - Pass:add new bucket/folder/folder/file
+        {'method': 'PUT', 'querystr': test_file_2, 'body': new_data, 'pass': True},
+        # GET - Pass:confirm file added
+        {'method': 'GET', 'querystr': test_file_2,'body': '', 'pass': True},
+
+        # PUT - Pass:overwrite bucket/file
+        {'method': 'PUT', 'querystr': test_file_1, 'body': 'helloworld', 'pass': True},
+
+        # DELETE - Pass:delete bucket/file
+        {'method': 'DELETE', 'querystr': test_file_1, 'body': '', 'pass': True},
+        # GET - Pass:confirm file deleted
+        {'method': 'GET', 'querystr': test_file_1,'body': '', 'pass': False},
+
+        # DELETE - Pass:delete bucket/folder/folder/file
+        {'method': 'DELETE', 'querystr': test_file_2, 'body': '', 'pass': True},
+        # GET - Pass:confirm file deleted
+        {'method': 'GET', 'querystr': test_file_2,'body': '', 'pass': False},
+    ]
+
+    return test_cases
 
 @py.test.fixture(scope='module')
 def apig_client(aws_settings):

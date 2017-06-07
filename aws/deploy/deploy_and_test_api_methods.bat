@@ -16,8 +16,9 @@ python deployment_helper.py || EXIT /B 4
 ECHO TEST_STEP: Test API methods
 python -m pytest -s tests\test_invoke_methods.py --junit-xml junit-methods.xml || EXIT /B 5
 
-ECHO TEST_STEP: Generate API.md documentation
-swagger2markdown -i ..\..\api\DataServiceAPI_swagger.json -o ..\..\API.md
+:: TODO Enable the following for regenerating the API.md
+::ECHO TEST_STEP: Generate API.md documentation
+::swagger2markdown -i ..\..\api\DataServiceAPI_swagger.json -o ..\..\API.md
 
 :: Leave build venv
 deactivate || EXIT /B 6

@@ -20,8 +20,8 @@ python -m pip install -r requirements.txt --upgrade
 echo "TEST_STEP: Create or update a deployment stage"
 python deployment_helper.py --deploy ${STAGE_NAME}
 
-echo "TEST_STEP: Run tests on the deployed stage (TODO)"
-#python -m pytest -s tests/test_deployed_stage.py --junit-xml junit-stage.xml
+echo "TEST_STEP: Run tests on the deployed stage"
+python -m pytest -s tests/test_api.py --junit-xml junit-api.xml
 
 # Leave virtual environment
 deactivate
