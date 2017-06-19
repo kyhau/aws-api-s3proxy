@@ -67,7 +67,8 @@ def test_data_service(apig_client, aws_settings, sample_test_file):
             httpMethod=test_case['method'],
             pathWithQueryString=test_case['querystr'],
             headers={},
-            body=test_case['body']
+            body=test_case['body'],
+            stageVariables={'bucket': bucket}
         )
 
         ret = resp['status'] in HTTPS_OK_CODES if test_case['pass'] else HTTPS_NOT_OK_CODES
