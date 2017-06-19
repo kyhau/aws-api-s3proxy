@@ -53,7 +53,5 @@ def test_data_service(apig_client, aws_settings, sample_test_file):
 
         ret = (resp.status_code is requests.codes.ok) == test_case['pass']
         if ret is False:
-            print(resp.status_code)
-            print('Response:\n{}'.format(json.dumps(resp.json(), cls=DefaultEncoder, indent=2)))
+            print(resp.text)
         assert ret
-
