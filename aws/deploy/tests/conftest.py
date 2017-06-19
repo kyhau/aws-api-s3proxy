@@ -59,23 +59,22 @@ def create_test_cases(bucket, sample_test_file, test_name):
     with open(sample_test_file, 'r') as fp:
         new_data = fp.read()
 
-    basepath = '?key={}'.format(bucket)
-    testpath = '{}/{}'.format(basepath, test_name)
+    testpath = '?key={}'.format(test_name)
     test_file_1 = '{}/{}'.format(testpath,'pytest_1.json')
     test_file_2 = '{}/a/b/{}'.format(testpath, 'pytest_2.json')
 
     test_cases = [
-        # HEAD - Pass:valid bucket
-        {'method': 'HEAD', 'querystr': basepath, 'body': '', 'pass': True},
-
-        # HEAD - Fail:invalid bucket
-        {'method': 'HEAD', 'querystr': '', 'body': '', 'pass': False},
-        {'method': 'HEAD', 'querystr': '?key=nonexistbucket', 'body': '', 'pass': False},
-
         # PUT - Pass:add new bucket/file
         {'method': 'PUT', 'querystr': test_file_1, 'body': new_data, 'pass': True},
         # GET - Pass:confirm file added
         {'method': 'GET', 'querystr': test_file_1, 'body': '', 'pass': True},
+        # HEAD - Pass:confirm file added
+        {'method': 'HEAD', 'querystr': test_file_1, 'body': '', 'pass': True},
+
+        # GET - Pass:confirm file added
+        {'method': 'GET', 'querystr': '?key=nonexistobject', 'body': '', 'pass': False},
+        # HEAD - Fail:invalid bucket/file
+        {'method': 'HEAD', 'querystr': '?key=nonexistobject', 'body': '', 'pass': False},
 
         # PUT - Pass:add new bucket/folder/folder/file
         {'method': 'PUT', 'querystr': test_file_2, 'body': new_data, 'pass': True},
