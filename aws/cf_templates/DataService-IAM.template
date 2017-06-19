@@ -122,27 +122,8 @@
           "Statement": [
             {
               "Effect": "Allow",
-              "Action": [
-                "apigateway:GET",
-                "apigateway:PUT",
-                "apigateway:POST",
-                "apigateway:PATCH"
-             ],
-              "Resource": [
-                {"Fn::Join": ["", ["arn:aws:apigateway:", {"Ref": "AWS::Region"}, "::/restapis/", {"Ref": "ApigID"}]]},
-                {"Fn::Join": ["", ["arn:aws:apigateway:", {"Ref": "AWS::Region"}, "::/restapis/", {"Ref": "ApigID"}, "/*"]]}
-             ]
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "apigateway:GET",
-                "apigateway:POST",
-                "apigateway:PUT",
-                "apigateway:PATCH",
-                "apigateway:DELETE"
-             ],
-              "Resource": {"Fn::Join": ["", ["arn:aws:apigateway:", {"Ref": "AWS::Region"}, "::/restapis/", {"Ref": "ApigID"}, "/documentation/*"]]}
+              "Action": ["apigateway:*"],
+              "Resource": [{"Fn::Join": ["", ["arn:aws:apigateway:", {"Ref": "AWS::Region"}, "::/restapis/", {"Ref": "ApigID"}, "/stages/prod/*"]]}]
             },
             {
               "Effect": "Allow",
