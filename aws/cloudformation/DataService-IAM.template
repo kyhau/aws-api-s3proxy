@@ -29,7 +29,6 @@
   },
 
   "Resources": {
-
     "ApigProdInvokeGroup": {
       "Type": "AWS::IAM::Group",
       "Properties": {"GroupName": "DataService-ApigProdInvoke"}
